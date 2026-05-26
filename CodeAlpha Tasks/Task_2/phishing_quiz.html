@@ -1,0 +1,184 @@
+
+<style>
+  .quiz-wrap { padding: 1.5rem; font-family: var(--font-sans); }
+  .opt-btn { display: block; width: 100%; text-align: left; padding: 0.75rem 1rem; margin-bottom: 8px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: var(--color-background-primary); cursor: pointer; font-size: 14px; color: var(--color-text-primary); transition: background 0.1s; }
+  .opt-btn:hover:not(:disabled) { background: var(--color-background-secondary); }
+  .opt-btn.correct { background: #EAF3DE; border-color: #639922; color: #27500A; }
+  .opt-btn.wrong { background: #FCEBEB; border-color: #E24B4A; color: #791F1F; }
+  .opt-btn.reveal { background: #EAF3DE; border-color: #639922; color: #27500A; }
+  .feedback { margin-top: 1rem; padding: 0.75rem 1rem; border-radius: var(--border-radius-md); font-size: 14px; border: 0.5px solid; }
+  .feedback.ok { background: #EAF3DE; border-color: #639922; color: #27500A; }
+  .feedback.ko { background: #FCEBEB; border-color: #E24B4A; color: #791F1F; }
+  .progress-dots { display: flex; gap: 6px; margin-bottom: 1.5rem; }
+  .dot { width: 28px; height: 5px; border-radius: 3px; background: var(--color-border-tertiary); }
+  .dot.done-ok { background: #639922; }
+  .dot.done-ko { background: #E24B4A; }
+  .dot.active { background: #534AB7; }
+  .nav-btn { padding: 8px 20px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: transparent; cursor: pointer; font-size: 14px; color: var(--color-text-primary); }
+  .nav-btn.primary { background: #534AB7; color: #EEEDFE; border-color: #534AB7; }
+  .score-ring { width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-direction: column; margin: 0 auto 1.5rem; }
+</style>
+
+<div class="quiz-wrap">
+  <h2 class="sr-only">Phishing awareness interactive quiz — 5 questions</h2>
+  <div id="quiz-body"></div>
+</div>
+
+<script>
+const questions = [
+  {
+    q: "You receive an email from support@paypa1-secure.com asking you to verify your account. What is the first red flag?",
+    opts: [
+      "The email asks you to verify your account",
+      "The sender domain is 'paypa1-secure.com', not 'paypal.com'",
+      "The email was sent on a weekend",
+      "The email is too short"
+    ],
+    answer: 1,
+    explain: "The domain 'paypa1-secure.com' uses a '1' instead of 'l' — a classic lookalike domain trick. Always inspect the sender address carefully before clicking anything."
+  },
+  {
+    q: "Which of these is the BEST definition of spear phishing?",
+    opts: [
+      "A phishing attack sent to millions of random users",
+      "A phishing attack delivered via SMS",
+      "A targeted phishing attack using personal info about the victim",
+      "A phishing attack that installs ransomware"
+    ],
+    answer: 2,
+    explain: "Spear phishing is highly targeted — attackers research the victim (LinkedIn, company website) to make the email seem legitimate. This makes it far more dangerous than generic phishing."
+  },
+  {
+    q: "An email says: 'Your Netflix account has been suspended. Verify within 24h or it will be permanently deleted.' Which psychological trigger is NOT used here?",
+    opts: [
+      "Urgency ('within 24h')",
+      "Fear ('suspended', 'permanently deleted')",
+      "Greed (promise of a reward)",
+      "Authority (impersonating Netflix)"
+    ],
+    answer: 2,
+    explain: "This email uses urgency, fear, and authority — but no greed/reward trigger. Greed would be something like 'You've won a free month!' The absence of a reward offer is the giveaway."
+  },
+  {
+    q: "You get a text: 'Your package is on hold. Pay £1.49 to release it: bit.ly/pkg-hold'. What should you do?",
+    opts: [
+      "Click the link and pay — it's only £1.49",
+      "Reply to the text to ask if it's legitimate",
+      "Ignore it and go directly to the courier's official website to check",
+      "Forward it to friends to warn them"
+    ],
+    answer: 2,
+    explain: "This is smishing (SMS phishing). The URL is shortened to hide the real destination. Always go directly to the official website — never click links in unexpected messages, regardless of the amount involved."
+  },
+  {
+    q: "Which combination of defenses is MOST effective against phishing?",
+    opts: [
+      "A strong password and antivirus software",
+      "Multi-factor authentication (MFA) + security awareness training",
+      "Never opening emails from unknown senders",
+      "Using a VPN at all times"
+    ],
+    answer: 1,
+    explain: "MFA stops attackers even if credentials are stolen, and training reduces the chance of falling for phishing in the first place. Together, they address both the technical and human layers of defense."
+  }
+];
+
+let current = 0;
+let scores = Array(questions.length).fill(null);
+let answered = false;
+
+function renderDots() {
+  return questions.map((_, i) => {
+    let cls = 'dot';
+    if (scores[i] === true) cls += ' done-ok';
+    else if (scores[i] === false) cls += ' done-ko';
+    else if (i === current) cls += ' active';
+    return `<div class="${cls}"></div>`;
+  }).join('');
+}
+
+function renderQuestion() {
+  const q = questions[current];
+  answered = false;
+  document.getElementById('quiz-body').innerHTML = `
+    <div class="progress-dots">${renderDots()}</div>
+    <p style="font-size:12px; color:var(--color-text-secondary); margin:0 0 0.5rem;">Question ${current+1} of ${questions.length}</p>
+    <p style="font-size:16px; font-weight:500; color:var(--color-text-primary); margin:0 0 1.25rem; line-height:1.5;">${q.q}</p>
+    <div id="options">
+      ${q.opts.map((o, i) => `<button class="opt-btn" onclick="select(${i})">${String.fromCharCode(65+i)}. ${o}</button>`).join('')}
+    </div>
+    <div id="feedback"></div>
+    <div style="display:flex; justify-content:flex-end; margin-top:1.25rem;">
+      <button class="nav-btn primary" id="next-btn" onclick="next()" style="display:none;">
+        ${current < questions.length - 1 ? 'Next <i class="ti ti-arrow-right" aria-hidden="true"></i>' : 'See results <i class="ti ti-chart-bar" aria-hidden="true"></i>'}
+      </button>
+    </div>
+  `;
+}
+
+function select(i) {
+  if (answered) return;
+  answered = true;
+  const q = questions[current];
+  const correct = i === q.answer;
+  scores[current] = correct;
+  const btns = document.querySelectorAll('.opt-btn');
+  btns.forEach((b, idx) => {
+    b.disabled = true;
+    if (idx === q.answer) b.classList.add('reveal');
+    if (idx === i && !correct) b.classList.add('wrong');
+    if (idx === i && correct) b.classList.add('correct');
+  });
+  document.getElementById('feedback').innerHTML = `
+    <div class="feedback ${correct ? 'ok' : 'ko'}">
+      <strong>${correct ? 'Correct!' : 'Not quite.'}</strong> ${q.explain}
+    </div>`;
+  document.getElementById('next-btn').style.display = 'inline-block';
+}
+
+function next() {
+  if (current < questions.length - 1) {
+    current++;
+    renderQuestion();
+  } else {
+    renderResults();
+  }
+}
+
+function renderResults() {
+  const total = scores.filter(Boolean).length;
+  const pct = Math.round((total / questions.length) * 100);
+  const ringColor = total >= 4 ? '#639922' : total >= 3 ? '#BA7517' : '#E24B4A';
+  const ringBg = total >= 4 ? '#EAF3DE' : total >= 3 ? '#FAEEDA' : '#FCEBEB';
+  const label = total === 5 ? 'Perfect score!' : total >= 4 ? 'Great job!' : total >= 3 ? 'Not bad!' : 'Keep practicing!';
+  const msg = total === 5
+    ? 'You can spot phishing attacks like a pro. Share your knowledge with your team!'
+    : total >= 3
+    ? 'You have a solid foundation — review the questions you missed to sharpen your skills.'
+    : 'Phishing attacks are designed to fool everyone. Review the presentation slides and try again.';
+
+  document.getElementById('quiz-body').innerHTML = `
+    <div class="progress-dots">${renderDots()}</div>
+    <div style="text-align:center; padding: 1rem 0;">
+      <div class="score-ring" style="background:${ringBg}; border: 2px solid ${ringColor};">
+        <span style="font-size:22px; font-weight:500; color:${ringColor};">${total}/5</span>
+        <span style="font-size:11px; color:${ringColor};">${pct}%</span>
+      </div>
+      <p style="font-size:18px; font-weight:500; color:var(--color-text-primary); margin:0 0 0.5rem;">${label}</p>
+      <p style="font-size:14px; color:var(--color-text-secondary); max-width:420px; margin:0 auto 1.5rem;">${msg}</p>
+      <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+        <button class="nav-btn" onclick="restart()"><i class="ti ti-refresh" aria-hidden="true"></i> Retry quiz</button>
+        <button class="nav-btn primary" onclick="sendPrompt('I scored ${total}/5 on the phishing quiz. Can you explain the questions I may have gotten wrong and give me tips to improve?')">Get feedback ↗</button>
+      </div>
+    </div>
+  `;
+}
+
+function restart() {
+  current = 0;
+  scores = Array(questions.length).fill(null);
+  renderQuestion();
+}
+
+renderQuestion();
+</script>

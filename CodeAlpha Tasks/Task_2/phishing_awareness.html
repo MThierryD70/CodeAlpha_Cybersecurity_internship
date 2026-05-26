@@ -1,0 +1,213 @@
+
+<style>
+  .slide { padding: 2rem; font-family: var(--font-sans); }
+  .badge { display: inline-block; font-size: 12px; padding: 3px 10px; border-radius: var(--border-radius-md); font-weight: 500; }
+  .card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; }
+  .progress-bar { display: flex; gap: 6px; margin-bottom: 2rem; }
+  .progress-step { height: 4px; flex: 1; border-radius: 2px; background: var(--color-border-tertiary); }
+  .progress-step.active { background: #534AB7; }
+  .progress-step.done { background: #9FE1CB; }
+  .type-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-top: 1.5rem; }
+  .type-card { border-radius: var(--border-radius-lg); padding: 1rem; border: 0.5px solid var(--color-border-tertiary); cursor: pointer; transition: transform 0.15s; }
+  .type-card:hover { transform: translateY(-2px); }
+  .type-label { font-size: 13px; font-weight: 500; margin: 0.5rem 0 0.25rem; }
+  .type-desc { font-size: 12px; color: var(--color-text-secondary); }
+  .psych-row { display: flex; flex-direction: column; gap: 10px; margin-top: 1.5rem; }
+  .psych-item { display: flex; align-items: flex-start; gap: 12px; padding: 0.75rem 1rem; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-tertiary); }
+  .psych-icon { font-size: 20px; width: 32px; text-align: center; flex-shrink: 0; }
+  .psych-title { font-size: 14px; font-weight: 500; color: var(--color-text-primary); }
+  .psych-example { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; font-style: italic; }
+  .nav-btn { padding: 8px 20px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: transparent; cursor: pointer; font-size: 14px; color: var(--color-text-primary); }
+  .nav-btn.primary { background: #534AB7; color: #EEEDFE; border-color: #534AB7; }
+  .section-title { font-size: 11px; font-weight: 500; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.08em; margin: 0 0 0.75rem; }
+  h1 { font-size: 22px; font-weight: 500; margin: 0 0 0.5rem; color: var(--color-text-primary); }
+  h2 { font-size: 18px; font-weight: 500; margin: 0 0 1rem; color: var(--color-text-primary); }
+</style>
+
+<div class="slide">
+  <h2 class="sr-only">Phishing Awareness Training — Interactive Presentation</h2>
+
+  <div class="progress-bar">
+    <div class="progress-step done" id="p1"></div>
+    <div class="progress-step" id="p2"></div>
+    <div class="progress-step" id="p3"></div>
+    <div class="progress-step" id="p4"></div>
+    <div class="progress-step" id="p5"></div>
+  </div>
+
+  <div id="slide-container"></div>
+
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 2rem;">
+    <button class="nav-btn" id="btn-prev" onclick="navigate(-1)"><i class="ti ti-arrow-left" aria-hidden="true"></i> Previous</button>
+    <span id="slide-counter" style="font-size: 13px; color: var(--color-text-secondary);"></span>
+    <button class="nav-btn primary" id="btn-next" onclick="navigate(1)">Next <i class="ti ti-arrow-right" aria-hidden="true"></i></button>
+  </div>
+</div>
+
+<script>
+const slides = [
+  {
+    id: 1,
+    render: () => `
+      <div style="text-align:center; padding: 1.5rem 0;">
+        <span class="badge" style="background:#EEEDFE; color:#534AB7; margin-bottom:1rem;">CodeAlpha Cybersecurity Internship</span>
+        <h1 style="font-size:26px; margin: 0.75rem 0 0.5rem;">Phishing Awareness Training</h1>
+        <p style="color: var(--color-text-secondary); font-size: 15px; max-width: 480px; margin: 0 auto 2rem;">Understanding, recognizing, and defending against social engineering attacks.</p>
+        <div style="display:flex; justify-content:center; gap:24px; flex-wrap:wrap;">
+          <div style="text-align:center;">
+            <div style="font-size:22px; font-weight:500; color:#534AB7;">3.4B</div>
+            <div style="font-size:12px; color:var(--color-text-secondary);">phishing emails/day</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-size:22px; font-weight:500; color:#D85A30;">90%</div>
+            <div style="font-size:12px; color:var(--color-text-secondary);">of breaches start with phishing</div>
+          </div>
+          <div style="font-size:22px; font-weight:500; color:#1D9E75; text-align:center;">
+            <div>$17,700</div>
+            <div style="font-size:12px; color:var(--color-text-secondary); font-weight:400;">lost per minute worldwide</div>
+          </div>
+        </div>
+      </div>
+    `
+  },
+  {
+    id: 2,
+    render: () => `
+      <p class="section-title">Module 1 — What is phishing?</p>
+      <h2>The 4 types of phishing attacks</h2>
+      <p style="font-size:14px; color:var(--color-text-secondary); margin-bottom:0;">Click each card to learn more.</p>
+      <div class="type-grid">
+        <div class="type-card" style="background:#EEEDFE; border-color:#AFA9EC;" onclick="sendPrompt('Explain phishing emails in more detail with a real example')">
+          <i class="ti ti-mail" style="font-size:22px; color:#534AB7;" aria-hidden="true"></i>
+          <p class="type-label" style="color:#3C3489;">Phishing</p>
+          <p class="type-desc" style="color:#534AB7;">Mass fraudulent emails impersonating trusted brands.</p>
+        </div>
+        <div class="type-card" style="background:#FAECE7; border-color:#F0997B;" onclick="sendPrompt('Explain spear phishing with a real corporate example')">
+          <i class="ti ti-target" style="font-size:22px; color:#993C1D;" aria-hidden="true"></i>
+          <p class="type-label" style="color:#712B13;">Spear phishing</p>
+          <p class="type-desc" style="color:#993C1D;">Targeted attack using personal info about the victim.</p>
+        </div>
+        <div class="type-card" style="background:#EAF3DE; border-color:#97C459;" onclick="sendPrompt('Explain smishing SMS phishing with examples')">
+          <i class="ti ti-device-mobile" style="font-size:22px; color:#3B6D11;" aria-hidden="true"></i>
+          <p class="type-label" style="color:#27500A;">Smishing</p>
+          <p class="type-desc" style="color:#3B6D11;">Phishing attacks delivered via SMS text messages.</p>
+        </div>
+        <div class="type-card" style="background:#FAEEDA; border-color:#EF9F27;" onclick="sendPrompt('Explain vishing voice phishing with examples')">
+          <i class="ti ti-phone" style="font-size:22px; color:#854F0B;" aria-hidden="true"></i>
+          <p class="type-label" style="color:#633806;">Vishing</p>
+          <p class="type-desc" style="color:#854F0B;">Voice calls impersonating banks or tech support.</p>
+        </div>
+      </div>
+    `
+  },
+  {
+    id: 3,
+    render: () => `
+      <p class="section-title">Module 2 — Psychology of attacks</p>
+      <h2>3 psychological triggers attackers exploit</h2>
+      <div class="psych-row">
+        <div class="psych-item" style="background:#FCEBEB; border-color:#F09595;">
+          <div class="psych-icon">⚠️</div>
+          <div>
+            <p class="psych-title" style="color:#A32D2D;">Urgency</p>
+            <p class="psych-example">"Your account will be deleted in 24 hours. Act now!"</p>
+            <p style="font-size:12px; color:var(--color-text-secondary); margin-top:4px;">Creates panic — victim acts before thinking critically.</p>
+          </div>
+        </div>
+        <div class="psych-item" style="background:#FAEEDA; border-color:#EF9F27;">
+          <div class="psych-icon">😨</div>
+          <div>
+            <p class="psych-title" style="color:#854F0B;">Fear</p>
+            <p class="psych-example">"Suspicious activity detected on your account."</p>
+            <p style="font-size:12px; color:var(--color-text-secondary); margin-top:4px;">Triggers fight-or-flight — victim focuses on the threat, not the source.</p>
+          </div>
+        </div>
+        <div class="psych-item" style="background:#EAF3DE; border-color:#97C459;">
+          <div class="psych-icon">🎁</div>
+          <div>
+            <p class="psych-title" style="color:#3B6D11;">Greed / reward</p>
+            <p class="psych-example">"You've been selected for a $500 gift card!"</p>
+            <p style="font-size:12px; color:var(--color-text-secondary); margin-top:4px;">Clouds judgment — victim focuses on reward, skips verification.</p>
+          </div>
+        </div>
+      </div>
+    `
+  },
+  {
+    id: 4,
+    render: () => `
+      <p class="section-title">Module 3 — How to recognize phishing</p>
+      <h2>Red flags checklist</h2>
+      <div style="display:flex; flex-direction:column; gap:8px; margin-top:0.5rem;">
+        ${[
+          ["ti-mail-off", "Suspicious sender address", "support@paypa1-secure.com vs paypal.com"],
+          ["ti-link", "Mismatched or lookalike URLs", "Hover before clicking — check the real destination"],
+          ["ti-alert-triangle", "Urgent or threatening language", "Pressure to act immediately without verifying"],
+          ["ti-paperclip", "Unexpected attachments", "Especially .exe, .zip, .docm files"],
+          ["ti-writing", "Grammar and spelling errors", "Legitimate companies proofread their communications"],
+          ["ti-lock-off", "Requests for credentials", "No legitimate service asks for your password via email"],
+        ].map(([icon, title, desc]) => `
+          <div style="display:flex; align-items:flex-start; gap:12px; padding:0.6rem 0.9rem; border-radius:var(--border-radius-md); border:0.5px solid var(--color-border-tertiary); background:var(--color-background-secondary);">
+            <i class="ti ${icon}" style="font-size:18px; color:#D85A30; flex-shrink:0; margin-top:2px;" aria-hidden="true"></i>
+            <div>
+              <p style="font-size:14px; font-weight:500; margin:0; color:var(--color-text-primary);">${title}</p>
+              <p style="font-size:12px; color:var(--color-text-secondary); margin:2px 0 0;">${desc}</p>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `
+  },
+  {
+    id: 5,
+    render: () => `
+      <p class="section-title">Module 4 — Best practices</p>
+      <h2>How to protect yourself</h2>
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:12px; margin-top:0.5rem;">
+        ${[
+          ["ti-shield-check", "#EEEDFE", "#534AB7", "#3C3489", "Enable MFA", "Multi-factor authentication stops 99.9% of account attacks."],
+          ["ti-eye", "#E1F5EE", "#1D9E75", "#085041", "Verify before clicking", "Go directly to the website rather than clicking email links."],
+          ["ti-school", "#FAEEDA", "#BA7517", "#633806", "Stay trained", "Regular security awareness training reduces phishing success by 75%."],
+          ["ti-device-desktop-analytics", "#FAECE7", "#993C1D", "#712B13", "Use email filters", "Enable spam and phishing filters on your email client."],
+        ].map(([icon, bg, iconColor, titleColor, title, desc]) => `
+          <div class="card" style="background:${bg}; border-color:${iconColor}30;">
+            <i class="ti ${icon}" style="font-size:22px; color:${iconColor};" aria-hidden="true"></i>
+            <p style="font-size:14px; font-weight:500; color:${titleColor}; margin:0.5rem 0 0.25rem;">${title}</p>
+            <p style="font-size:12px; color:var(--color-text-secondary);">${desc}</p>
+          </div>
+        `).join('')}
+      </div>
+      <div style="margin-top:1.5rem; padding:1rem; border-radius:var(--border-radius-md); background:var(--color-background-secondary); border:0.5px solid var(--color-border-tertiary); text-align:center;">
+        <p style="font-size:14px; font-weight:500; color:var(--color-text-primary); margin:0 0 0.5rem;">Ready to test your knowledge?</p>
+        <button class="nav-btn primary" onclick="window.location.href = 'phishing_quiz.html'">Take the quiz <i class="ti ti-arrow-right" aria-hidden="true"></i></button>
+      </div>
+    `
+  }
+];
+
+let current = 0;
+
+function updateProgress() {
+  slides.forEach((_, i) => {
+    const el = document.getElementById('p' + (i+1));
+    if (!el) return;
+    el.className = 'progress-step' + (i < current ? ' done' : i === current ? ' active' : '');
+  });
+  document.getElementById('slide-counter').textContent = (current + 1) + ' / ' + slides.length;
+  document.getElementById('btn-prev').style.visibility = current === 0 ? 'hidden' : 'visible';
+  document.getElementById('btn-next').textContent = current === slides.length - 1 ? 'Finish' : 'Next ';
+  document.getElementById('btn-next').innerHTML = current === slides.length - 1
+    ? 'Finish <i class="ti ti-check" aria-hidden="true"></i>'
+    : 'Next <i class="ti ti-arrow-right" aria-hidden="true"></i>';
+}
+
+function navigate(dir) {
+  if (current + dir < 0 || current + dir >= slides.length) return;
+  current += dir;
+  document.getElementById('slide-container').innerHTML = slides[current].render();
+  updateProgress();
+}
+
+document.getElementById('slide-container').innerHTML = slides[0].render();
+updateProgress();
+</script>
