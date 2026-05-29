@@ -20,6 +20,7 @@ CodeAlpha_CyberSecurity_Internship/
 │
 ├── Task2_PhishingAwareness/
 │     └── phishing_awareness.html           # Interactive training module + quiz
+│     └── phishing_quiz.html
 │
 ├── Task3_SecureCodingReview/
 │     └── Secure_Code_Audit_Report.docx     # Professional audit report
@@ -75,13 +76,13 @@ A professional security audit report identifying and remediating 5 critical vuln
 
 **Findings covered:**
 
-| ID | Vulnerability | Severity | OWASP |
-|----|--------------|----------|-------|
-| #001 | SQL Injection | CRITICAL | A01 |
-| #002a | Plaintext Password Storage | CRITICAL | A02 |
-| #002b | Sensitive Data in Logs | HIGH | A03 |
-| #003a | Reflected XSS | HIGH | A03 |
-| #003b | Debug Mode in Production | CRITICAL | A05 |
+| ID      | Vulnerability                 | Severity     | OWASP |
+|---------|-------------------------------|--------------|-------|
+| #001  | SQL Injection                 | CRITICAL     | A01   |
+| #002a | Plaintext Password Storage    | CRITICAL     | A02   |
+| #002b | Sensitive Data in Logs        | HIGH         | A03   |
+| #003a | Reflected XSS                 | HIGH         | A03   |
+| #003b | Debug Mode in Production      | CRITICAL     | A05   |
 
 Each finding includes vulnerable code, proof of concept, and fixed code with explanation.
 
@@ -102,7 +103,7 @@ alert tcp any any -> any any         → Detects established TCP sessions
 **Run:**
 ```bash
 # Terminal 1 — Start IDS
-C:\Snort\bin\snort.exe -c C:\Snort\etc\snort.conf -l C:\Snort\log -A fast -i 5
+C:\Snort\bin\snort.exe -c C:\Snort\etc\snort.conf -l C:\Snort\log -A fast -i 6
 
 # Terminal 2 — Monitor alerts in real time
 powershell Get-Content C:\Snort\log\alert.ids -Wait
