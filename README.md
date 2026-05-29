@@ -16,19 +16,25 @@ Welcome to my CodeAlpha Cybersecurity Internship repository. This repo contains 
 CodeAlpha_CyberSecurity_Internship/
 │
 ├── Task1_NetworkSniffer/
-│     └── sniffer.py                        # Python packet capture tool
+│     ├── sniffer.py                        # Python packet capture tool
+│     └── README.md
+│           
 │
 ├── Task2_PhishingAwareness/
-│     └── phishing_awareness.html           # Interactive training module + quiz
-│     └── phishing_quiz.html
+│     ├── phishing_awareness.html           # Interactive training module
+│     ├── phishing_quiz.html                # Quiz
+│     └── README.md
 │
 ├── Task3_SecureCodingReview/
-│     └── Secure_Code_Audit_Report.docx     # Professional audit report
+│     ├── Secure_Code_Audit_Report.docx     # Professional audit report
+│     └── README.md
+│           
 │
 ├── Task4_NetworkIDS/
 │     ├── snort.conf                        # Production Snort configuration
 │     ├── local.rules                       # Custom detection rules
-│     └── screenshots/                      # Live detection evidence
+│     ├── screenshots/                      # Live detection evidence
+│     └── README.md
 │
 └── README.md
 ```
