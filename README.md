@@ -27,6 +27,7 @@ CodeAlpha_CyberSecurity_Internship/
 │
 ├── Task3_SecureCodingReview/
 │     ├── Secure_Code_Audit_Report.docx     # Professional audit report
+│     ├── secure_code_audit.py              
 │     └── README.md
 │           
 │

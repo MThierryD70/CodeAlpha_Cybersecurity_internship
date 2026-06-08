@@ -121,6 +121,7 @@ bandit -r ./your_project/
 ```
 Task3_SecureCodingReview/
 ├── Secure_Code_Audit_Report.docx    # Full professional audit report
+├── secure_code_audit.py
 └── README.md
 ```
 
